@@ -1,0 +1,111 @@
+import "./App.css";
+import { useEffect, useState } from "react";
+import PokemonCARD from "./components/PokemonComponents/PokemonCARD";
+import Modal from "./components/PokemonComponents//Modal";
+import FilterPoke from "./components/PokemonComponents/PokemonSearchBar";
+
+function App() {
+  const APIData = JSON.parse(localStorage.getItem("PokemonsDATA"));
+  const [ShowModal, setShowModal] = useState(false);
+  const [PokemonDATA, setPokemonDATA] = useState([]);
+  const [selectedPoke, setSelectedPoke] = useState({});
+
+  useEffect(() => {
+    async function getPokemons() {
+      let Array = [];
+      for (let i = 1; i < 23; i++) {
+        const randomNumber = Math.ceil(Math.random() * 540);
+        const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${i}`);
+        const data = await res.json();
+        Array.push({
+          ...data,
+          image: `/assets/${data.id}.svg`,
+        });
+      }
+      return Array;
+    }
+    let FromLocal = JSON.parse(localStorage.getItem("PokemonsDATA"));
+    if (FromLocal) {
+      setPokemonDATA(FromLocal);
+      return;
+    } else {
+      getPokemons().then((Data) =>
+        localStorage.setItem("PokemonsDATA", JSON.stringify(Data))
+      );
+      setPokemonDATA(JSON.parse(localStorage.getItem("PokemonsDATA")));
+    }
+  }, []);
+
+  function FetchData() {
+    setPokemonDATA(JSON.parse(localStorage.getItem("PokemonsDATA")));
+  }
+
+  ///SORT FUNCTION
+  function renderPokemonModal(uid) {
+    let tempPoke = APIData.filter((poke) => (poke.id == uid ? poke : null));
+    setSelectedPoke(tempPoke[0]);
+    setShowModal(true);
+  }
+
+  ///MODAL STATE FUNCTION
+  function changeModalState() {
+    setShowModal((prev) => !prev);
+  }
+
+  ///FILTER FUNCTION
+  function handleChange(e) {
+    const { value } = e.target;
+    setPokemonDATA(
+      (prev) =>
+        (prev = APIData.filter((poke) =>
+          poke.name.toLowerCase().includes(value.toLowerCase())
+        ))
+    );
+  }
+
+  ///SORT FUNCTION
+  function sortList(e) {
+    const { value } = e.target;
+    setPokemonDATA((prev) =>
+      [...APIData].sort((a, b) => {
+        if (value === "A-Z") {
+          return a.name > b.name ? 1 : -1;
+        }
+        if (value === "Z-A") {
+          return a.name > b.name ? -1 : 1;
+        }
+        if (value === "height") {
+          return a.height - b.height;
+        }
+        return 0;
+      })
+    );
+  }
+
+  let RenderPokemons = PokemonDATA.map((element, index) => (
+    <PokemonCARD
+      url={element.image}
+      infos={element}
+      key={element.id}
+      pokemonID={() => renderPokemonModal(element.id)}
+    ></PokemonCARD>
+  ));
+
+  return (
+    <div className="App">
+      <Modal
+        modalState={ShowModal}
+        selectedPoke={selectedPoke}
+        showModal={changeModalState}
+      ></Modal>
+      <div className="PokeContent">
+        <FilterPoke
+          filterPokemon={(e) => handleChange(e)}
+          sortSelect={(e) => sortList(e)}
+        ></FilterPoke>
+        <div className="pokemonsCatalog">{RenderPokemons}</div>
+      </div>
+    </div>
+  );
+}
+export default App;
