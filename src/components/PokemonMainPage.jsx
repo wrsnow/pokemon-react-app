@@ -25,8 +25,8 @@ function PokemonApp() {
       console.log("Fetching items");
       let Array = [];
       let NumbersArr = [];
-      while (Array.length < 3) {
-        let randomNum = Math.floor(Math.random() * 540);
+      while (Array.length < 23) {
+        let randomNum = Math.floor(Math.random() * 649);
         if (!NumbersArr.includes(randomNum)) {
           NumbersArr.push(randomNum);
           const res = await fetch(
@@ -46,11 +46,9 @@ function PokemonApp() {
 
     let FromLocal = JSON.parse(localStorage.getItem("PokemonsDATA"));
     if (FromLocal) {
-      console.log("IF STATEMENT TRUE");
       setApiDATA(FromLocal);
       return;
     } else {
-      console.log("IF STATEMENT FALSE");
       getPokemons().then((Data) => {
         localStorage.setItem("PokemonsDATA", JSON.stringify(Data));
         setPokemonDATA(Data);
