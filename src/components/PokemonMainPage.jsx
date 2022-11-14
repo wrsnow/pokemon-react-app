@@ -21,7 +21,6 @@ function PokemonApp() {
   const [selectedPoke, setSelectedPoke] = useState({});
 
   useEffect(() => {
-    console.log("Using useEffect");
     async function getPokemons() {
       console.log("Fetching items");
       let Array = [];
