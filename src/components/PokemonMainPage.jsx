@@ -25,7 +25,7 @@ function PokemonApp() {
       console.log("Fetching items");
       let Array = [];
       let NumbersArr = [];
-      while (Array.length < 23) {
+      while (Array.length < 3) {
         let randomNum = Math.floor(Math.random() * 540);
         if (!NumbersArr.includes(randomNum)) {
           NumbersArr.push(randomNum);
@@ -53,7 +53,7 @@ function PokemonApp() {
       console.log("IF STATEMENT FALSE");
       getPokemons().then((Data) => {
         localStorage.setItem("PokemonsDATA", JSON.stringify(Data));
-        setApiDATA(Data);
+        setPokemonDATA(Data);
       });
     }
   }, []);
