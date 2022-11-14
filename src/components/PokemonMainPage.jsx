@@ -38,7 +38,7 @@ function PokemonApp() {
           const items = { name, height, weight, types, id };
           Array.push({
             ...items,
-            image: `/assets/PokemonSVGs/${items.id}.svg`,
+            image: `pokemon-react-app/assets/PokemonSVGs/${items.id}.svg`,
           });
         }
       }
