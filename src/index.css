@@ -88,7 +88,7 @@ body button {
 }
 
 .pokemon-card {
-  aspect-ratio: 3/4;
+  aspect-ratio: 2.5/4;
   background-color: rgb(25, 25, 25);
   color: rgb(255, 255, 255);
   display: flex;
@@ -148,7 +148,7 @@ h2 {
 }
 
 .pokemon-card:hover {
-  border: 9px solid #e9b872;
+  border: 9px solid #a63d40;
   cursor: pointer;
   transform: scale(1.2);
   filter: none;
