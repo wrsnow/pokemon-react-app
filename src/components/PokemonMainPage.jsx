@@ -40,15 +40,26 @@ function PokemonApp() {
     />
   ));
 
+  const h1Style = {
+    textAlign: "center",
+    color: "#fff",
+    fontSize: "1rem",
+  };
+
   if (isFetching) {
     return (
       <>
         <Navbar />
         <div className="text-container">
-          <h1 style={{ textAlign: "center", color: "#fff" }}>Loading...</h1>
+          <h1 style={h1Style}>Loading...</h1>
         </div>
       </>
     );
+  }
+  console.log(Error);
+
+  if (Error) {
+    return <h1 style={h1Style}>Something went wrong...</h1>;
   }
 
   return (

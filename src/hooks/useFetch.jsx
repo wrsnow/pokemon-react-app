@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 
-function useFetch() {
+function useFetch(URL) {
   const [pokeData, setPokedata] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
   const [Error, setError] = useState([]);
   const pokeDataCache = JSON.parse(localStorage.getItem("pokedata"));
 
   useEffect(() => {
+    setError(false);
     setIsFetching(true);
     const controller = new AbortController();
     async function getPokemons() {
@@ -17,9 +18,7 @@ function useFetch() {
         if (!NumbersArr.includes(randomNum)) {
           NumbersArr.push(randomNum);
 
-          const res = await fetch(
-            `https://pokeapi.co/api/v2/pokemon/${randomNum}`
-          );
+          const res = await fetch(`${URL}${randomNum}`);
           const data = await res.json();
           const { name, height, weight, types, id } = data;
           const items = { name, height, weight, types, id };
@@ -41,7 +40,7 @@ function useFetch() {
           localStorage.setItem("pokedata", JSON.stringify(data));
           setPokedata(data);
         })
-        .catch((err) => setError(err))
+        .catch((err) => setError(err.message))
         .finally(() => setIsFetching(false));
     }
     return () => {
