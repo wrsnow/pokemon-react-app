@@ -1,81 +1,21 @@
-import { useEffect, useMemo, useState } from "react";
-import PokemonCARD from "./PokemonCARD";
-import FilterPoke from "./PokemonSearchBar";
+import { useEffect, useMemo, useState, lazy, Suspense } from "react";
 import Modal from "./Modal";
-import {
-  ModalPopUp,
-  sortList,
-  handleSearch,
-} from "../components/PokemonAppFunctions";
+import { ModalPopUp } from "../components/PokemonAppFunctions";
+import useFetch from "../hooks/useFetch";
+import Navbar from "./Navbar";
 
 function PokemonApp() {
-  const [Test, setTest] = useState([]);
-
-  ///////////////
-  const [APIData, setApiDATA] = useState(() => {
-    const LocalStorage = JSON.parse(localStorage.getItem("PokemonsDATA"));
-    return [...new Set(LocalStorage)] || [];
-  });
+  const [pokeData, isFetching, Error] = useFetch(
+    "https://pokeapi.co/api/v2/pokemon/"
+  );
   const [ShowModal, setShowModal] = useState(false);
-  const [PokemonDATA, setPokemonDATA] = useState(() => APIData || []);
+  const [PokemonDATA, setPokemonDATA] = useState(() => pokeData || []);
   const [selectedPoke, setSelectedPoke] = useState({});
-
-  useEffect(() => {
-    async function getPokemons() {
-      console.log("Fetching items");
-      let Array = [];
-      let NumbersArr = [];
-      while (Array.length < 23) {
-        let randomNum = Math.floor(Math.random() * 649);
-        if (!NumbersArr.includes(randomNum)) {
-          NumbersArr.push(randomNum);
-          const res = await fetch(
-            `https://pokeapi.co/api/v2/pokemon/${randomNum}`
-          );
-          const data = await res.json();
-          const { name, height, weight, types, id } = data;
-          const items = { name, height, weight, types, id };
-          Array.push({
-            ...items,
-            image: `/pokemon-react-app/assets/PokemonSVGs/${items.id}.svg`,
-          });
-        }
-      }
-      return Array;
-    }
-
-    let FromLocal = JSON.parse(localStorage.getItem("PokemonsDATA"));
-    if (FromLocal) {
-      setApiDATA(FromLocal);
-      return;
-    } else {
-      getPokemons().then((Data) => {
-        localStorage.setItem("PokemonsDATA", JSON.stringify(Data));
-        setPokemonDATA(Data);
-      });
-    }
-  }, []);
+  const [isFilteringActive, setIsFilteringActive] = useState(false);
 
   function changeModalState() {
     setShowModal((prev) => !prev);
   }
-
-  let RenderPokemons = PokemonDATA.map((element) => (
-    <PokemonCARD
-      url={element.image}
-      infos={element}
-      key={element.name}
-      pokemonID={() =>
-        ModalPopUp(
-          element.id,
-          PokemonDATA,
-          setSelectedPoke,
-          setShowModal,
-          setTest
-        )
-      }
-    ></PokemonCARD>
-  ));
 
   let PokeModal = useMemo(() => {
     let RenderModal = (
@@ -88,16 +28,53 @@ function PokemonApp() {
     return RenderModal;
   }, [ShowModal, selectedPoke]);
 
-  console.log(Test);
+  const PokemonCARD = lazy(() => import("./PokemonCARD"));
+  const renderPokeCards = PokemonDATA?.map((poke) => (
+    <PokemonCARD
+      url={poke.image}
+      infos={poke}
+      key={poke.name}
+      pokemonID={() =>
+        ModalPopUp(poke.id, pokeData, setSelectedPoke, setShowModal)
+      }
+    />
+  ));
+
+  if (isFetching) {
+    return (
+      <>
+        <Navbar />
+        <div className="text-container">
+          <h1 style={{ textAlign: "center", color: "#fff" }}>Loading...</h1>
+        </div>
+      </>
+    );
+  }
 
   return (
     <div className="PokeContent">
       {PokeModal}
-      <FilterPoke
-        handleSearch={(e) => handleSearch(e, setPokemonDATA, APIData)}
-        sortSelect={(e) => sortList(e, setPokemonDATA, APIData)}
-      ></FilterPoke>
-      <div className="pokemonsCatalog">{RenderPokemons}</div>
+      <Navbar
+        setIsFilteringActive={setIsFilteringActive}
+        setPokemonDATA={setPokemonDATA}
+        pokeData={pokeData}
+      />
+      <div className="pokemonsCatalog">
+        <Suspense fallback={<h1>Loading...</h1>}>
+          {isFilteringActive
+            ? renderPokeCards
+            : pokeData?.map((poke) => (
+                <PokemonCARD
+                  url={poke.image}
+                  infos={poke}
+                  key={poke.name}
+                  pokemonID={() =>
+                    ModalPopUp(poke.id, pokeData, setSelectedPoke, setShowModal)
+                  }
+                />
+              ))}
+        </Suspense>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,3 @@
-import React, { useEffect, useMemo, useState } from "react";
 import { getUrl } from "../components/PokemonAppFunctions";
 
 export default function PokemonCARD(props) {
@@ -11,18 +10,20 @@ export default function PokemonCARD(props) {
     };
   });
 
-  const RenderPokemonTypes = PokeTypes.map((types, idx) => (
-    <img
-      key={idx}
-      src={types.url}
-      alt={"type-" + types.name}
-      title={types.name.toUpperCase()}
-    />
-  ));
+  const RenderPokemonTypes = PokeTypes.map((types, idx) =>
+    types.url ? (
+      <img
+        key={idx}
+        src={types.url}
+        alt={"type-" + types.name}
+        title={types.name.toUpperCase()}
+      />
+    ) : null
+  );
 
   return (
     <div onClick={props.pokemonID} className="pokemon-card">
-      <div className="types-bar">{RenderPokemonTypes}</div>
+      {/* <div className="types-bar">{RenderPokemonTypes}</div> */}
       <img src={props.url} alt="" />
       <h2>{name[0].toUpperCase() + name.substring(1)}</h2>
       <p>Height: {`${height / 10} m`}</p>

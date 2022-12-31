@@ -1,11 +1,12 @@
-export const ModalPopUp = (uid, arr, SelectedPoke, ShowModal, setTest) => {
+export const ModalPopUp = (uid, arr, SelectedPoke, ShowModal) => {
   let tempPoke = arr.filter((poke) => (poke.id == uid ? poke : null));
   SelectedPoke(tempPoke[0]);
   ShowModal(true);
 };
 
-export function sortList(e, setPokemonDATA, APIData) {
+export function sortList(e, setPokemonDATA, APIData, setIsFilteringActive) {
   const { value } = e.target;
+  setIsFilteringActive(true);
   setPokemonDATA((prev) =>
     [...APIData].sort((a, b) => {
       if (value === "A-Z") {
@@ -23,15 +24,23 @@ export function sortList(e, setPokemonDATA, APIData) {
       return 0;
     })
   );
+  if (value.length === 0) {
+    setIsFilteringActive(false);
+  }
 }
 
-export function handleSearch(e, setPokemonDATA, APIData) {
+export function handleSearch(e, setPokemonDATA, APIData, setIsFilteringActive) {
   let UserInput = e.target.value;
+  setIsFilteringActive(true);
+
   setPokemonDATA((prev) =>
     APIData.filter((poke) =>
       poke.name.toLowerCase().includes(UserInput.toLowerCase())
     )
   );
+  if (UserInput.length === 0) {
+    setIsFilteringActive(false);
+  }
 }
 
 export function getUrl(name) {

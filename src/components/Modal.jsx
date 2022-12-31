@@ -15,6 +15,9 @@ export default function Modal(props) {
     }
   }, [modalState]);
 
+  const heightInMeters = height / 10 + " m";
+  const weightInKilograms = weight / 10 + " kg";
+
   return (
     <div className={`modal--body ${modal_state}`}>
       <div onClick={showModal} className="modal__overlay"></div>
@@ -24,8 +27,8 @@ export default function Modal(props) {
         </div>
         <img src={image} alt={name} />
         <h2 className="text">{name}</h2>
-        <p className="text">Height: {height / 10} m</p>
-        <p className="text">Weight: {weight / 10} kg</p>
+        <p className="text">Height: {heightInMeters}</p>
+        <p className="text">Weight: {weightInKilograms}</p>
         <p className="description">
           Lorem ipsum, dolor sit amet consectetur adipisicing elit. At, suscipit
           expedita earum quasi animi ratione dicta obcaecati sunt libero
